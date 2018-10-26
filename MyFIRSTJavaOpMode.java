@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.MostCurrentProgram; //This declares that 
 import com.qualcomm.hardware.bosch.BNO055IMU; //This imports the required information for running the IMU and allowing it to recognize it
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;//This imports the autonomous reference to allow the driver station to recognize it as such
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; //This imports the methods found within LineaOpMode so that they can be used here
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -111,7 +112,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private double timeoutmilli = 30000;                                                            //This is used within the TimeKeeper thread and states that the program must stop no matter what after 30,000 milliseconds/30 seconds.
 
     @Override
-    public synchronized void runOpMode() {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
+    public synchronized void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
             while (opModeIsActive()) {
             telemetry.update();
         }
@@ -148,12 +149,6 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
         Dismount();
 
-        while (!isStopRequested() && !imu.isGyroCalibrated())                                       //This is to make sure that the gyro is calibrated and that no stops re requested before continuing forward. It will wait 35 seconds each time that it checks.
-        {
-            sleep(35);
-            idle();
-        }
-        telemetry.addData("Calibration","complete");
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
 
 
@@ -363,7 +358,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         oppreborn.liftnLower.setPower(DROP_SPEED);
         sleep(4500);
         oppreborn.liftnLower.setPower(0);
-        oppreborn.midDrive.setPower(DRIVE_SPEED*2); CHECK DIRECTION IT MOVES IN FIRST!!!;
+        oppreborn.midDrive.setPower(DRIVE_SPEED*2);
         sleep(1000);
         oppreborn.midDrive.setPower(0);
     }
