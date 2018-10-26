@@ -54,5 +54,5 @@ private synchronized void updateHanger(){
 }
 private synchronized void updateStrafe(){
         oppreborn.midDrive.setPower(((gamepad1.right_stick_x/2)+(gamepad1.left_stick_x/2))*.7);
-}
     }
+}
