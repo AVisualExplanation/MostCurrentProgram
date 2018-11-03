@@ -31,14 +31,14 @@ public class OpprebornTeleOp extends OpMode {
              }
 
 private synchronized void updateDrive(){
-        oppreborn.leftDrive.setPower(gamepad1.right_stick_y*.7);
-        oppreborn.rightDrive.setPower(gamepad1.left_stick_y*.7);
+        oppreborn.leftDrive.setPower(-gamepad1.right_stick_y);
+        oppreborn.rightDrive.setPower(-gamepad1.left_stick_y);
 }
 private synchronized void updateHanger(){
-        if (gamepad1.left_trigger>0 || gamepad1.right_trigger>0){
-            oppreborn.liftnLower.setPower((-((gamepad1.left_trigger/2) + (gamepad1.right_trigger/2)))*.7);
+        if (gamepad2.left_trigger>0 || gamepad2.right_trigger>0){
+            oppreborn.liftnLower.setPower((-((gamepad2.left_trigger/2) + (gamepad2.right_trigger/2)))*.7);
         }
-        else if (gamepad1.left_bumper && gamepad1.right_bumper){
+        else if (gamepad2.left_bumper && gamepad2.right_bumper){
             oppreborn.liftnLower.setPower(DROP_SPEED);
         }
         else {

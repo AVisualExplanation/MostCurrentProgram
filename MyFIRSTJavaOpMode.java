@@ -111,9 +111,6 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private final double TURN_SPEED = 0.3;                                                          // Nominal half speed for better accuracy.
     @Override
     public synchronized void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
-            while (opModeIsActive()) {
-            telemetry.update();
-        }
         oppreborn.init(hardwareMap);
         telemetry.addData("hardwareMap", "Initilized");
         telemetry.update();
@@ -141,16 +138,16 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = null;                                         //This is an algorithm that can use acceleration in order to find velocity and position using integral calculus
         imu = hardwareMap.get(BNO055IMU.class, "imu");                                   //This establishes the use of the imu under the hardware map to just be referenced as "imu". Most importantly, it means that the robot configuration in the expansion hub will refer to the port where the imu is located as "imu".
         imu.initialize(parameters);                                                                 //This initializes the parameters (moves the parameters specified to be associated with the imu)
-        sleep(1000);
-       // sleep(1000);
 
 
-        Dismount();
+        //Dismount();
+        //Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
-
-
-        //Dismount(36);                                                                        //This calls the method defined later on in the code. This method lowers the robot, detaches it from the lander, and puts it into the correct orientation for the next section.
+        IMUDrive(0.3,25,0);
+        IMUDrive(0.3, 50, 90);
+        IMUDrive(0.3,47,135);
+        PlaceMarker();
+        IMUDrive(0.3,78,-45);
 
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);                  //This starts the integration (integral calculus) processes for the acceleration.
         telemetry.addData("Path", "Complete");                                        //This sends the driver station phone the message that the robot has completed all of its necessary paths
@@ -232,6 +229,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                         oppreborn.leftDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS,
                         oppreborn.rightDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS);
                 telemetry.update();
+                idle();
             }
 
             // Stop all motion;
@@ -253,7 +251,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
     private void PlaceMarker() {
-        oppreborn.placeMarker.setPosition(1);
+        oppreborn.placeMarker.setPosition(.1);
+        sleep(1000);
     }
 
 
@@ -273,6 +272,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
+                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
                 oppreborn.rightDrive.setPower(0);
@@ -283,6 +283,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
+                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);
                 oppreborn.rightDrive.setPower(0);
@@ -356,11 +357,17 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private synchronized void Dismount() {
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        oppreborn.liftnLower.setPower(DROP_SPEED);
-        sleep(4500);
+        runtime.reset();
+        while (opModeIsActive() && runtime.milliseconds()<3250) {
+            oppreborn.liftnLower.setPower(0.6);
+            idle();
+        }
         oppreborn.liftnLower.setPower(0);
-        oppreborn.midDrive.setPower(.7);
-        sleep(1000);
+        runtime.reset();
+        while (opModeIsActive() && runtime.milliseconds()<700) {
+            oppreborn.midDrive.setPower(.7);
+            idle();
+        }
         oppreborn.midDrive.setPower(0);
     }
 

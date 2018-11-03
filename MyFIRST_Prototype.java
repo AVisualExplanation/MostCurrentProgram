@@ -56,17 +56,30 @@ public class MyFIRST_Prototype extends OpMode {
         imu.initialize(parameters);                                                                 //This initializes the parameters (moves the parameters specified to be associated with the imu)
 
 
-        try {
-            Dismount();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    Dismount();
+       // } catch (InterruptedException e) {
+       //     e.printStackTrace();
+        //    }
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
 
-        telemetry.addData("Path", "Complete");                                        //This sends the driver station phone the message that the robot has completed all of its necessary paths
-        telemetry.update();
+        IMUDrive(0.17, 35, 0);
+        // IMUDrive(0.3, 50, 90);
+        // IMUDrive(0.3,47,135);
+         // PlaceMarker();
+       // IMUDrive(0.3,78,-45);
+            oppreborn.leftDrive.setPower(0);
+            oppreborn.rightDrive.setPower(0);
+            oppreborn.midDrive.setPower(0);
+        try {
+            wait(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
+
     private synchronized void IMUDrive(double speed, double inches, double angle) {
         Rotate(angle);
         int newLeftTarget;
@@ -108,11 +121,11 @@ public class MyFIRST_Prototype extends OpMode {
                 }
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        oppreborn.leftDrive.getCurrentPosition()/201.2283,
-                        oppreborn.rightDrive.getCurrentPosition()/201.2283);
-                telemetry.update();
+               // telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+              //  telemetry.addData("Path2", "Running at %7d :%7d",
+                //        oppreborn.leftDrive.getCurrentPosition()/201.2283,
+                //        oppreborn.rightDrive.getCurrentPosition()/201.2283);
+               // telemetry.update();
             }
 
             // Stop all motion;
@@ -123,7 +136,6 @@ public class MyFIRST_Prototype extends OpMode {
             // Turn off RUN_TO_POSITION
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
             //  sleep(250);   // optional pause after each move
         }
 
@@ -134,7 +146,7 @@ public class MyFIRST_Prototype extends OpMode {
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
     private void PlaceMarker() {
-        oppreborn.placeMarker.setPosition(1);
+        oppreborn.placeMarker.setPosition(.5);
     }
 
 
@@ -144,13 +156,15 @@ public class MyFIRST_Prototype extends OpMode {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+            if (dsrangle-3<angles.firstAngle && dsrangle+3>angles.firstAngle){
+                return;}
             if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
                 while (angles.firstAngle > dsrangle){                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
                     oppreborn.leftDrive.setPower(0.3);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
                     oppreborn.rightDrive.setPower(-0.3);
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-                    telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
-                    telemetry.update();
+                    //telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
+                   //telemetry.update();
                 }
                 oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
                 oppreborn.rightDrive.setPower(0);
@@ -159,25 +173,25 @@ public class MyFIRST_Prototype extends OpMode {
                     oppreborn.leftDrive.setPower(-0.3);
                     oppreborn.rightDrive.setPower(0.3);
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                    telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
-                    telemetry.update();
+                  //  telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
+                    //telemetry.update();
                 }
                 oppreborn.leftDrive.setPower(0);
                 oppreborn.rightDrive.setPower(0);
             } else if (angles.firstAngle == dsrangle) {                                                  //This checks to see if the current angle is equal to the desired angle, "dsrangle", and if so, it will just move on to the next method
                 oppreborn.leftDrive.setPower(0);
                 oppreborn.rightDrive.setPower(0);
-                telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);
-                telemetry.update();
+              //  telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);
+               // telemetry.update();
                 return;                                                                             //This essentially just ends the loop early
             } else {
-                telemetry.addData("The following just happened: ", "The IMPOSSIBLE"); //This is a bit of joke code that will likely never get executed because it is impossible for two real numbers to neither equal, be less than, or be greater than each other at the same time. I just thought it'd be a funny fail safe.
-                telemetry.update();
+              //  telemetry.addData("The following just happened: ", "The IMPOSSIBLE"); //This is a bit of joke code that will likely never get executed because it is impossible for two real numbers to neither equal, be less than, or be greater than each other at the same time. I just thought it'd be a funny fail safe.
+                //telemetry.update();
             }
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);       //This displays on the driver station that the robot is correctly oriented at the given angle
-            telemetry.update();
+           // telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);       //This displays on the driver station that the robot is correctly oriented at the given angle
+           //telemetry.update();
         }
     }
 
@@ -234,11 +248,11 @@ public class MyFIRST_Prototype extends OpMode {
     private synchronized void Dismount() throws InterruptedException {
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        oppreborn.liftnLower.setPower(0.4);
-        wait(4500);
+        oppreborn.liftnLower.setPower(0.6);
+        wait(3250);
         oppreborn.liftnLower.setPower(0);
         oppreborn.midDrive.setPower(.7);
-        wait(1000);
+        wait(500);
         oppreborn.midDrive.setPower(0);
     }
 
