@@ -121,10 +121,9 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");                                   //This establishes the use of the imu under the hardware map to just be referenced as "imu". Most importantly, it means that the robot configuration in the expansion hub will refer to the port where the imu is located as "imu".
         imu.initialize(parameters);                                                                 //This initializes the parameters (moves the parameters specified to be associated with the imu)
 
-
-        //Dismount();
-        //Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
-
+        waitForStart();
+        Dismount();
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
         IMUDrive(DRIVE_SPEED,25,0);
         IMUDrive(DRIVE_SPEED, 50, 90);
         IMUDrive(DRIVE_SPEED,47,135);
@@ -208,8 +207,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                 // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
-                        oppreborn.leftDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS,
-                        oppreborn.rightDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS);
+                        (int)(oppreborn.leftDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS),
+                        (int) (oppreborn.rightDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS));
                 telemetry.update();
 //                idle();
             }
@@ -342,7 +341,7 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         runtime.reset();
-        while (opModeIsActive() && runtime.milliseconds()<3250) {
+        while (opModeIsActive() && runtime.milliseconds()<3750) {
             oppreborn.liftnLower.setPower(0.6);
 //            idle();
         }
