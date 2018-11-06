@@ -3,34 +3,16 @@ package org.firstinspires.ftc.teamcode.MostCurrentProgram; //This declares that 
 import com.qualcomm.hardware.bosch.BNO055IMU; //This imports the required information for running the IMU and allowing it to recognize it
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;//This imports the autonomous reference to allow the driver station to recognize it as such
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; //This imports the methods found within LineaOpMode so that they can be used here
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import java.util.Locale;
 
 
 /*
@@ -229,7 +211,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                         oppreborn.leftDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS,
                         oppreborn.rightDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS);
                 telemetry.update();
-                idle();
+//                idle();
             }
 
             // Stop all motion;
@@ -253,7 +235,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private void PlaceMarker() {
 while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
     oppreborn.placeMarker.setPosition(.4);
-    idle();
+//    idle();
 }
     }
 
@@ -274,7 +256,7 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
-                    idle();
+//                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
                 oppreborn.rightDrive.setPower(0);
@@ -285,7 +267,7 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
-                    idle();
+//                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);
                 oppreborn.rightDrive.setPower(0);
@@ -362,13 +344,13 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
         runtime.reset();
         while (opModeIsActive() && runtime.milliseconds()<3250) {
             oppreborn.liftnLower.setPower(0.6);
-            idle();
+//            idle();
         }
         oppreborn.liftnLower.setPower(0);
         runtime.reset();
         while (opModeIsActive() && runtime.milliseconds()<700) {
             oppreborn.midDrive.setPower(.7);
-            idle();
+//            idle();
         }
         oppreborn.midDrive.setPower(0);
     }

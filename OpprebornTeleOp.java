@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @TeleOp(name="Oppreborn TeleOp", group="TeleOP")
@@ -31,8 +30,8 @@ public class OpprebornTeleOp extends OpMode {
              }
 
 private synchronized void updateDrive(){
-        oppreborn.leftDrive.setPower(-gamepad1.right_stick_y);
-        oppreborn.rightDrive.setPower(-gamepad1.left_stick_y);
+        oppreborn.leftDrive.setPower((-gamepad1.right_stick_y)*.7);
+        oppreborn.rightDrive.setPower((-gamepad1.left_stick_y)*.7);
 }
 private synchronized void updateHanger(){
         if (gamepad2.left_trigger>0 || gamepad2.right_trigger>0){
