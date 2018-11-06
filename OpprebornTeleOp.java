@@ -18,10 +18,10 @@ public class OpprebornTeleOp extends OpMode {
     private final double DROP_SPEED = 0.4;                                                          //This was created as a precaution to ensure that the robot didn't drop down too quickly
     @Override
     public void init() {
+        oppreborn.init(hardwareMap);
         oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        oppreborn.init(hardwareMap);
     }
     @Override
     public void loop(){
