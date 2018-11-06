@@ -88,7 +88,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private final double COUNTS_PER_INCH_LIFTNLOWER = (COUNTS_PER_MOTOR_REV_LIFTNLOWER * DRIVE_GEAR_REDUCTION) /
             (LIFTNLOWER_DIAMETER * 3.1415);
 
-    private final double DRIVE_SPEED = 0.3;                                                         // Nominal speed for better accuracy.
+    private final double DRIVE_SPEED = 0.6;                                                         // Nominal speed for better accuracy.
     private final double DROP_SPEED = 0.4;                                                          //This was created as a precaution to ensure that the robot didn't drop down too quickly
     private final double TURN_SPEED = 0.3;                                                          // Nominal half speed for better accuracy.
     @Override
@@ -125,11 +125,11 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         //Dismount();
         //Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
 
-        IMUDrive(0.3,25,0);
-        IMUDrive(0.3, 50, 90);
-        IMUDrive(0.3,47,135);
+        IMUDrive(DRIVE_SPEED,25,0);
+        IMUDrive(DRIVE_SPEED, 50, 90);
+        IMUDrive(DRIVE_SPEED,47,135);
         PlaceMarker();
-        IMUDrive(0.3,78,-45);
+        IMUDrive(DRIVE_SPEED,78,-45);
 
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);                  //This starts the integration (integral calculus) processes for the acceleration.
         telemetry.addData("Path", "Complete");                                        //This sends the driver station phone the message that the robot has completed all of its necessary paths
