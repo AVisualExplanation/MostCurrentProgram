@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * This is NOT an opmode.ghgh
+ * This is NOT an opmode.ghghbjkkj
  *
  * This class can be used to define all the specific hardware for a single robot.
  * In this case that robot is a Pushbot.
