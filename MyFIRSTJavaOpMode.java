@@ -251,8 +251,10 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
     private void PlaceMarker() {
-        oppreborn.placeMarker.setPosition(.1);
-        sleep(1000);
+while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
+    oppreborn.placeMarker.setPosition(.4);
+    idle();
+}
     }
 
 
