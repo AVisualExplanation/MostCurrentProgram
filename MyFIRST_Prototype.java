@@ -67,7 +67,7 @@ public class MyFIRST_Prototype extends OpMode {
         IMUDrive(0.17, 35, 0);
         // IMUDrive(0.3, 50, 90);
         // IMUDrive(0.3,47,135);
-         // PlaceMarker();
+         // mineralCollection();
        // IMUDrive(0.3,78,-45);
             oppreborn.leftDrive.setPower(0);
             oppreborn.rightDrive.setPower(0);
@@ -145,8 +145,8 @@ public class MyFIRST_Prototype extends OpMode {
 
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
-    private void PlaceMarker() {
-        oppreborn.placeMarker.setPosition(.5);
+    private void mineralCollection() {
+        oppreborn.mineralCollection.setPosition(.5);
     }
 
 

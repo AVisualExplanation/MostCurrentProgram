@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -58,7 +59,7 @@ public class HardwarePushbot
     public DcMotor  rightDrive  = null;
     public DcMotor midDrive = null;
     public DcMotor  liftnLower  = null;
-    public Servo placeMarker = null;
+    public Servo mineralCollection = null;
     //public DcMotor  leftArm     = null;
 
 
@@ -86,14 +87,14 @@ public class HardwarePushbot
         rightDrive = hwMap.get(DcMotor.class, "right_drive");
         midDrive = hwMap.get(DcMotor.class, "mid_drive");
         liftnLower = hwMap.get(DcMotor.class, "lift_lower");
-        placeMarker =hwMap.get(Servo.class,"place_marker");
+        mineralCollection =hwMap.get(Servo.class,"Mineral_Collection");
 
 
-        leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         midDrive.setDirection(DcMotor.Direction.REVERSE);
         liftnLower.setDirection(DcMotor.Direction.FORWARD);
-        placeMarker.setDirection(Servo.Direction.FORWARD);
+        mineralCollection.setDirection(Servo.Direction.FORWARD);
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                            //Naturally when the robot is pushed while its wheels are set to zero power, the robot
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                           //wheels will spin. This means that another robot would be able to push the robot out
@@ -106,7 +107,7 @@ public class HardwarePushbot
         leftDrive.setPower(0);
         rightDrive.setPower(0);
         midDrive.setPower(0);
-        placeMarker.setPosition(0.5);
+        mineralCollection.setPosition(Range.clip(0.5,0,1));
         liftnLower.setPower(0);
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.

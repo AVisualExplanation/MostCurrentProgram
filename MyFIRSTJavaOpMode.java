@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /*
 TODO:
--Create method for dismounting from the lander (created by "Samuel Tukua", "24/9/2018")
 -Create method for putting down the marker in the depot.(created by "Samuel Tukua", "24/9/2018")
 -Create a method to identify the color of the minerals in the sampling field and move the correct one
  (created by "Samuel Tukua" , "28/9/2018")
@@ -94,9 +93,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     @Override
     public synchronized void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
         oppreborn.init(hardwareMap);
-        telemetry.addData("hardwareMap", "Initilized");
-        telemetry.update();
-        //sleep(1000);
+
         // (Created by "Samuel Tukua","26/09/2018", "edit #2", "This changes the Zero Power Mode to resist being pushed", "NEEDEDIT for results of this change")
         oppreborn.leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                  //Naturally when the robot is pushed while its wheels are set to zero power, the robot
         oppreborn.rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                 //wheels will spin. This means that another robot would be able to push the robot out
@@ -105,12 +102,6 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         //Encoder Wheels
         oppreborn.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                        //This stops the left drive if it was moving and then resets the encoder
         oppreborn.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                       //This stops the right drive if it was moving and then resets the encoder
-        oppreborn.liftnLower.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                       //This stops the liftnLower drive if it was moving and then resets the encoder
-        telemetry.addData("Path0", "Starting at %7d :%7d",                           //This just updates the telemetry data saying that the rover is on path zero starting at the current position of the left and right wheels which should be zero
-                oppreborn.leftDrive.getCurrentPosition(),
-                oppreborn.rightDrive.getCurrentPosition());
-        telemetry.update();
-
         //IMU Gyro
         // (Created by "Samuel Tukua","26/09/2018", "edit #3", "This puts the IMU into sensor mode rather than keeping it in config mode", "NEEDEDIT for results of this change")
         parameters.mode = BNO055IMU.SensorMode.IMU;                                                 //This puts the IMU into sensor mode as opposed to config mode
@@ -127,27 +118,13 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         IMUDrive(DRIVE_SPEED,25,0);
         IMUDrive(DRIVE_SPEED, 50, 90);
         IMUDrive(DRIVE_SPEED,47,135);
-        PlaceMarker();
+        mineralCollection();
         IMUDrive(DRIVE_SPEED,78,-45);
 
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);                  //This starts the integration (integral calculus) processes for the acceleration.
         telemetry.addData("Path", "Complete");                                        //This sends the driver station phone the message that the robot has completed all of its necessary paths
         telemetry.update();
     }
-
-
-    /*This is the method that dismounts the rover from the lander. It does this method in a three step process
-     of lowering, detaching, and preparing for the next command.
-     */
-    //private synchronized void Dismount(double inches) {
-     //   int newdismount = oppreborn.liftnLower.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_LIFTNLOWER); //This establishes the number of counts that are needed to go the desired distance.
-       // oppreborn.liftnLower.setTargetPosition(newdismount);                                        //This sets the target position to be the ground
-      //  oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_TO_POSITION);                              //This causes the motor to run until it gets to its destination
-     //   oppreborn.liftnLower.setPower(Math.abs(DROP_SPEED));                                        //This tells the robot to run at the given speed for dropping which is lower th
-        //part 2: release latching mechanism
-        //Part 3: put robot into needed position and form
-        //oppreborn.liftnLower.setPower(0);
-    //}
 
 
     /******************************************************************
@@ -209,8 +186,10 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                 telemetry.addData("Path2", "Running at %7d :%7d",
                         (int)(oppreborn.leftDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS),
                         (int) (oppreborn.rightDrive.getCurrentPosition()/COUNTS_PER_INCH_WHEELS));
+                telemetry.addData("adjustment","at %7d", (int)(adjustment*1000));
+                telemetry.addData("speeds", "left: %7d and right %7d", (int)(oppreborn.leftDrive.getPower()*1000),(int)(oppreborn.leftDrive.getPower()*1000) );
                 telemetry.update();
-//                idle();
+                idle();
             }
 
             // Stop all motion;
@@ -231,10 +210,10 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
-    private void PlaceMarker() {
-while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
-    oppreborn.placeMarker.setPosition(.4);
-//    idle();
+    private void mineralCollection() {
+while((oppreborn.mineralCollection.getPosition()!= .4) && (opModeIsActive())) {
+    oppreborn.mineralCollection.setPosition(.4);
+    idle();
 }
     }
 
@@ -255,7 +234,7 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
-//                    idle();
+                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
                 oppreborn.rightDrive.setPower(0);
@@ -266,7 +245,7 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
                     angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                     telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
                     telemetry.update();
-//                    idle();
+                    idle();
                 }
                 oppreborn.leftDrive.setPower(0);
                 oppreborn.rightDrive.setPower(0);
@@ -341,17 +320,19 @@ while((oppreborn.placeMarker.getPosition()!= .4) && (opModeIsActive())) {
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         runtime.reset();
-        while (opModeIsActive() && runtime.milliseconds()<3750) {
+        while (opModeIsActive() && runtime.milliseconds()<4000) {
             oppreborn.liftnLower.setPower(0.6);
-//            idle();
+            idle();
         }
         oppreborn.liftnLower.setPower(0);
         runtime.reset();
-        while (opModeIsActive() && runtime.milliseconds()<700) {
+        while (opModeIsActive() && runtime.milliseconds()<500) {
+            oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.midDrive.setPower(.7);
-//            idle();
+            idle();
         }
         oppreborn.midDrive.setPower(0);
+        oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 }
