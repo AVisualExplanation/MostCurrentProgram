@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;//This imports the aut
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; //This imports the methods found within LineaOpMode so that they can be used here
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -90,6 +91,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     private final double DRIVE_SPEED = 0.6;                                                         // Nominal speed for better accuracy.
     private final double DROP_SPEED = 0.4;                                                          //This was created as a precaution to ensure that the robot didn't drop down too quickly
     private final double TURN_SPEED = 0.3;                                                          // Nominal half speed for better accuracy.
+
+
     @Override
     public synchronized void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
         oppreborn.init(hardwareMap);
@@ -116,9 +119,11 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         Dismount();
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
         IMUDrive(DRIVE_SPEED,25,0);
+
+
         IMUDrive(DRIVE_SPEED, 50, 90);
         IMUDrive(DRIVE_SPEED,47,135);
-        mineralCollection();
+        PlaceMarker();
         IMUDrive(DRIVE_SPEED,78,-45);
 
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);                  //This starts the integration (integral calculus) processes for the acceleration.
@@ -171,14 +176,17 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                 if (angles.firstAngle > angle) {                                                    //This checks to see if the current angle is greater than the desired angle in turns of euclidean angles if this is true, then the speed of the left wheel will increase causing the robot to speed up by the increment of adjustment
                     oppreborn.leftDrive.setPower(Math.abs(speed + adjustment));
                     oppreborn.rightDrive.setPower(Math.abs(speed - adjustment));
+                    idle();
                 }
                 else if (angles.firstAngle < angle) {                                               //This does the same as the previous if statement, but for turning to the right
                     oppreborn.rightDrive.setPower(Math.abs(speed + adjustment));
                     oppreborn.leftDrive.setPower(Math.abs(speed - adjustment));
+                    idle();
                 }
                 else {
                     oppreborn.leftDrive.setPower(speed);
                     oppreborn.rightDrive.setPower(speed);
+                    idle();
                 }
 
                 // Display it for the driver.
@@ -201,21 +209,18 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
         }
 
-        //part 2: turn that angle and double check that you are at the correct angle when finished.
-        //part 3: drive the required distance while continually adjusting so that on correct angle
     }
 
 
     /*This just commands the motor/servo that has the sole purpose of putting down the marker*/
-    private void mineralCollection() {
-while((oppreborn.mineralCollection.getPosition()!= .4) && (opModeIsActive())) {
-    oppreborn.mineralCollection.setPosition(.4);
+    private void PlaceMarker() {
+    oppreborn.mineralCollection.setPosition(Range.clip(0,0,1));
+    sleep(500);
     idle();
 }
-    }
+
 
 
     //(Created by "Samuel Tukua","26/09/2018", "edit #5", "Finished the rotate method, but still need to check it", "NEEDEDIT checking that the thirdangle is the one that I want to use")
@@ -224,41 +229,36 @@ while((oppreborn.mineralCollection.getPosition()!= .4) && (opModeIsActive())) {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-            if (dsrangle-1<angles.firstAngle && dsrangle+1>angles.firstAngle){
-                return;
-            }
-            if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
-                while (angles.firstAngle > dsrangle && opModeIsActive()){                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
-                    oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
-                    oppreborn.rightDrive.setPower(-TURN_SPEED);
-                    angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-                    telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
-                    telemetry.update();
-                    idle();
+            if (!(dsrangle-1<angles.firstAngle) && !(dsrangle+1>angles.firstAngle)) {
+                if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
+                    while (angles.firstAngle > dsrangle && opModeIsActive()) {                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
+                        oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
+                        oppreborn.rightDrive.setPower(-TURN_SPEED);
+                        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+                        telemetry.addData("Rotation at", "%7d of %7d", Math.round(angles.firstAngle), Math.round(dsrangle));
+                        telemetry.update();
+                        idle();
+                    }
+                    oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
+                    oppreborn.rightDrive.setPower(0);
+                } else if (angles.firstAngle < dsrangle) {                                                   //This checks to see if the current angle is less than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal.
+                    while (angles.firstAngle < dsrangle && opModeIsActive()) {                                                   //This setup does the  same as the previous setup but instead does it in a counter clockwise fashion in order to rotate the robot towards the positive 180 degrees section
+                        oppreborn.leftDrive.setPower(-TURN_SPEED);
+                        oppreborn.rightDrive.setPower(TURN_SPEED);
+                        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                        telemetry.addData("Rotation at", "%7d of %7d", Math.round(angles.firstAngle), Math.round(dsrangle));
+                        telemetry.update();
+                        idle();
+                    }
                 }
-                oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
-                oppreborn.rightDrive.setPower(0);
-            } else if (angles.firstAngle < dsrangle) {                                                   //This checks to see if the current angle is less than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal.
-                while (angles.firstAngle < dsrangle && opModeIsActive()) {                                                   //This setup does the  same as the previous setup but instead does it in a counter clockwise fashion in order to rotate the robot towards the positive 180 degrees section
-                    oppreborn.leftDrive.setPower(-TURN_SPEED);
-                    oppreborn.rightDrive.setPower(TURN_SPEED);
-                    angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                    telemetry.addData("Rotation at","%7d of %7d", Math.round(angles.firstAngle) , Math.round(dsrangle));
-                    telemetry.update();
-                    idle();
+                    oppreborn.leftDrive.setPower(0);
+                    oppreborn.rightDrive.setPower(0);
+            } else {                                                  //This checks to see if the current angle is equal to the desired angle, "dsrangle", and if so, it will just move on to the next method
+                    oppreborn.leftDrive.setPower(0);
+                    oppreborn.rightDrive.setPower(0);
+                    telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);
+                    telemetry.update();                                                         //This essentially just ends the loop early
                 }
-                oppreborn.leftDrive.setPower(0);
-                oppreborn.rightDrive.setPower(0);
-            } else if (angles.firstAngle == dsrangle) {                                                  //This checks to see if the current angle is equal to the desired angle, "dsrangle", and if so, it will just move on to the next method
-                oppreborn.leftDrive.setPower(0);
-                oppreborn.rightDrive.setPower(0);
-                telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);
-                telemetry.update();
-                return;                                                                             //This essentially just ends the loop early
-            } else {
-                telemetry.addData("The following just happened: ", "The IMPOSSIBLE"); //This is a bit of joke code that will likely never get executed because it is impossible for two real numbers to neither equal, be less than, or be greater than each other at the same time. I just thought it'd be a funny fail safe.
-                telemetry.update();
-            }
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);       //This displays on the driver station that the robot is correctly oriented at the given angle
@@ -287,46 +287,18 @@ while((oppreborn.mineralCollection.getPosition()!= .4) && (opModeIsActive())) {
      * return recoverinstruct;
      * }
      */
-/*
-    private final Thread TimeKeeper = new Thread(new Runnable() {                                   //This creates a new thread called TimeKeeper. Java is multithreaded and so this program can run seperately from the main program while still making alterations. This one in particular turns off the robot once the time surpasses the allowed time.
-        public void run() {
-            try {                                                                                   //Because the TimeKeeper.join() statement throws InterruptedException, the try/catch statement is used to handle that error.
-                final long startTime = System.currentTimeMillis();                                  //This establishes the start time as whenever the thread is initialized. In this cause, the thread is started right after the the waitforstart() in the runopmode() method.
-                double duration = (int) (System.currentTimeMillis() - startTime);                   //This establishes what it means when the code references duration.
-                while (timeoutmilli < duration && opModeIsActive()) {                               //This checks that the duration is less than the timeout of 30 seconds and if so then it displays the current time in milliseconds to the driver using the telemetry.addData() method.
-                    duration = (int) (System.currentTimeMillis() - startTime);
-                    telemetry.addData("Running Time: ", "%7d milliseconds", duration);
-                    telemetry.update();
-            }
-                if (timeoutmilli > duration && opModeIsActive()) {                                  //This checks if the current time exceeds the timeout period
-                    telemetry.addData("Running Status: ", "Finished");                //If the current time is outside of the time allowed then the driver station will state that it is finished
-                    telemetry.update();f
-                    requestOpModeStop();                                                            //This stops the opmode because otherwise the robot would continue to run after 30 seconds and be disqualified
-                    oppreborn.leftDrive.setPower(0);                                                //This stops both of the wheels in case turning off the opmode somehow didn't
-                    oppreborn.rightDrive.setPower(0);
-                    TimeKeeper.join();                                                              //This command kills the current thread which obviously stops it from running.
-                } else {
-                    TimeKeeper.join();
-                }
-            } catch (InterruptedException e) {
-                telemetry.addData("TimeKeeper", "Had an error");                      //This tells the driver that the TimeKeeper had an error if it is given an InterruptedException.
-            }
-
-        }
-
-    });
-    */
     private synchronized void Dismount() {
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         runtime.reset();
-        while (opModeIsActive() && runtime.milliseconds()<4000) {
+        while (opModeIsActive() && runtime.milliseconds()<4600) {
             oppreborn.liftnLower.setPower(0.6);
             idle();
         }
         oppreborn.liftnLower.setPower(0);
+        sleep(1000);
         runtime.reset();
-        while (opModeIsActive() && runtime.milliseconds()<500) {
+        while (opModeIsActive() && runtime.milliseconds()<300) {
             oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.midDrive.setPower(.7);
             idle();
@@ -335,4 +307,21 @@ while((oppreborn.mineralCollection.getPosition()!= .4) && (opModeIsActive())) {
         oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void setAngles(Orientation angles) {
+        this.angles = angles;
+    }
 }
+
+
+/////////////////////////////////////////////////////////////
+//        oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                int newLeftTarget = oppreborn.midDrive.getCurrentPosition() + (int) (-78 * COUNTS_PER_INCH_WHEELS);
+//                oppreborn.midDrive.setTargetPosition(newLeftTarget);
+//                oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                oppreborn.midDrive.setPower(.7);
+//                while (opModeIsActive() &&
+//                oppreborn.midDrive.isBusy()){
+//                oppreborn.midDrive.setPower(0.7);
+//                }
+//                oppreborn.midDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                oppreborn.midDrive.setPower(0);

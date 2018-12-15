@@ -94,7 +94,6 @@ public class HardwarePushbot
         rightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         midDrive.setDirection(DcMotor.Direction.REVERSE);
         liftnLower.setDirection(DcMotor.Direction.FORWARD);
-        mineralCollection.setDirection(Servo.Direction.FORWARD);
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                            //Naturally when the robot is pushed while its wheels are set to zero power, the robot
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);                           //wheels will spin. This means that another robot would be able to push the robot out
@@ -107,7 +106,7 @@ public class HardwarePushbot
         leftDrive.setPower(0);
         rightDrive.setPower(0);
         midDrive.setPower(0);
-        mineralCollection.setPosition(Range.clip(0.5,0,1));
+        mineralCollection.setPosition(Range.clip(1.0,0,1));
         liftnLower.setPower(0);
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
