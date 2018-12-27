@@ -94,7 +94,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
 
     @Override
-    public synchronized void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
+    public void runOpMode() throws InterruptedException {                                                          //runOpMode() is where all of the information for actually running the op mode goes. This is what is called when the big white button that says "init" on it is pressed.
         oppreborn.init(hardwareMap);
 
         // (Created by "Samuel Tukua","26/09/2018", "edit #2", "This changes the Zero Power Mode to resist being pushed", "NEEDEDIT for results of this change")
@@ -145,7 +145,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
       or counter clockwise until it matches the angle depending on whether the degrees input was 0 to +180 (counter clockwise)
       or 0 to -180 (clockwise). Finally, it uses the encoders within the wheel motors
       to go a desired distance forward while continually checking that it is in a straight line.*/
-    private synchronized void IMUDrive(double speed, double inches, double angle) {
+    private void IMUDrive(double speed, double inches, double angle) {
         Rotate(angle);
         int newLeftTarget;
         int newRightTarget;
@@ -176,17 +176,14 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                 if (angles.firstAngle > angle) {                                                    //This checks to see if the current angle is greater than the desired angle in turns of euclidean angles if this is true, then the speed of the left wheel will increase causing the robot to speed up by the increment of adjustment
                     oppreborn.leftDrive.setPower(Math.abs(speed + adjustment));
                     oppreborn.rightDrive.setPower(Math.abs(speed - adjustment));
-                    idle();
                 }
                 else if (angles.firstAngle < angle) {                                               //This does the same as the previous if statement, but for turning to the right
                     oppreborn.rightDrive.setPower(Math.abs(speed + adjustment));
                     oppreborn.leftDrive.setPower(Math.abs(speed - adjustment));
-                    idle();
                 }
                 else {
                     oppreborn.leftDrive.setPower(speed);
                     oppreborn.rightDrive.setPower(speed);
-                    idle();
                 }
 
                 // Display it for the driver.
@@ -208,7 +205,6 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         }
 
     }
@@ -224,12 +220,12 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
 
     //(Created by "Samuel Tukua","26/09/2018", "edit #5", "Finished the rotate method, but still need to check it", "NEEDEDIT checking that the thirdangle is the one that I want to use")
-    private synchronized void Rotate(double dsrangle) {                                             //This method will be called upon in order to rotate the rover using the gyro
+    private void Rotate(double dsrangle) {                                             //This method will be called upon in order to rotate the rover using the gyro
         if (opModeIsActive()) {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-            if (!(dsrangle-1<angles.firstAngle) && !(dsrangle+1>angles.firstAngle)) {
+            if ( angles.firstAngle >= dsrangle-1 && angles.firstAngle <= dsrangle+1 ) {
                 if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
                     while (angles.firstAngle > dsrangle && opModeIsActive()) {                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
                         oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
@@ -267,7 +263,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
     }
 
 
-    private synchronized double AdjustOrientation(double angle) {                                   //This is the method that keeps the robot in a straight line while it is driving. This method has an input for the correct angle that the robot should be going and bases its data off of that.
+    private double AdjustOrientation(double angle) {                                   //This is the method that keeps the robot in a straight line while it is driving. This method has an input for the correct angle that the robot should be going and bases its data off of that.
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
         double adjustment, calibration = 0.002;                                                       //This establishes two variables that are both doubles. One is the adjustment variable that the method will be returning and the other is a calibration variable that will be experimentally tweaked until it fits the robot the best.
         adjustment = (angles.firstAngle - angle) * calibration;                                     //This defines the adjustment as the difference between the desired angle and the current angle and multiplies that by the calibration.
         return adjustment;                                                                          //This return statement means that the method "AdjustOrientation(angle)" will return the required amount of adjustment to be added to the wheels.
@@ -287,7 +284,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
      * return recoverinstruct;
      * }
      */
-    private synchronized void Dismount() {
+    private void Dismount() {
+
         oppreborn.liftnLower.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         oppreborn.liftnLower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         runtime.reset();
