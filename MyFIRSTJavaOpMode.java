@@ -38,7 +38,7 @@ TODO:
  */
 
 /*Possible Sources of Errors
- -Intrinsic vs. extrinsic
+ -EXTRINSIC vs. extrinsic
  -Old Encoder wheel issues
  -Mixing up lefts and rights in whether the change in power should be positive or negative
  -Trial and Error the gyroscopes values with the gyroscope demonstration tool*/
@@ -116,15 +116,14 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         imu.initialize(parameters);                                                                 //This initializes the parameters (moves the parameters specified to be associated with the imu)
 
         waitForStart();
-        Dismount();
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
+       // Dismount();
+        wait(400);
+        Orientation angles = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //This establishes that when I ask for angles, I am wanting the Extrinsic angles listed in degrees in the format of ZYX.
         IMUDrive(DRIVE_SPEED,25,0);
-
-
-        IMUDrive(DRIVE_SPEED, 50, 90);
-        IMUDrive(DRIVE_SPEED,47,135);
-        PlaceMarker();
-        IMUDrive(DRIVE_SPEED,78,-45);
+        //IMUDrive(DRIVE_SPEED, 50, 90);
+       // IMUDrive(DRIVE_SPEED,47,135);
+        //PlaceMarker();
+        //IMUDrive(DRIVE_SPEED,78,-45);
 
         // imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);                  //This starts the integration (integral calculus) processes for the acceleration.
         telemetry.addData("Path", "Complete");                                        //This sends the driver station phone the message that the robot has completed all of its necessary paths
@@ -224,24 +223,24 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
         if (opModeIsActive()) {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-            if ( !(angles.firstAngle >= dsrangle-1 && angles.firstAngle <= dsrangle+1 )) {
-                if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
-                    while (angles.firstAngle > dsrangle && opModeIsActive()) {                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
-                        oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
-                        oppreborn.rightDrive.setPower(-TURN_SPEED);
-                        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-                        telemetry.addData("Rotation at", "%7d of %7d", Math.round(angles.firstAngle), Math.round(dsrangle));
-                        telemetry.update();
-                        idle();
-                    }
+            angles = imu.getAngularOrientation(AxesReference.EXTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+            //if ( !(angles.firstAngle >= dsrangle-1 && angles.firstAngle <= dsrangle+1 )) {
+            if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
+                while (angles.firstAngle > dsrangle && opModeIsActive()) {                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
+                    oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
+                    oppreborn.rightDrive.setPower(-TURN_SPEED);
+                    angles = imu.getAngularOrientation(AxesReference.EXTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+                    telemetry.addData("Rotation at", "%7d of %7d", Math.round(angles.firstAngle), Math.round(dsrangle));
+                    telemetry.update();
+                    idle(); 
+                }
                     oppreborn.leftDrive.setPower(0);                                                    //This makes sure that the wheels have stopped spinning once the robot has finished its rotation
                     oppreborn.rightDrive.setPower(0);
                 } else if (angles.firstAngle < dsrangle) {                                                   //This checks to see if the current angle is less than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal.
                     while (angles.firstAngle < dsrangle && opModeIsActive()) {                                                   //This setup does the  same as the previous setup but instead does it in a counter clockwise fashion in order to rotate the robot towards the positive 180 degrees section
                         oppreborn.leftDrive.setPower(-TURN_SPEED);
                         oppreborn.rightDrive.setPower(TURN_SPEED);
-                        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                        angles = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                         telemetry.addData("Rotation at", "%7d of %7d", Math.round(angles.firstAngle), Math.round(dsrangle));
                         telemetry.update();
                         idle();
@@ -254,7 +253,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                     oppreborn.rightDrive.setPower(0);
                     telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);
                     telemetry.update();                                                         //This essentially just ends the loop early
-                }
+             //   }
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             telemetry.addData("Robot Orientation", "Correctly at " + dsrangle);       //This displays on the driver station that the robot is correctly oriented at the given angle
@@ -264,8 +263,8 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
 
     private double AdjustOrientation(double angle) {                                   //This is the method that keeps the robot in a straight line while it is driving. This method has an input for the correct angle that the robot should be going and bases its data off of that.
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-        double adjustment, calibration = 0.002;                                                       //This establishes two variables that are both doubles. One is the adjustment variable that the method will be returning and the other is a calibration variable that will be experimentally tweaked until it fits the robot the best.
+        angles = imu.getAngularOrientation(AxesReference.EXTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
+        double adjustment, calibration = 0.0008;                                                       //This establishes two variables that are both doubles. One is the adjustment variable that the method will be returning and the other is a calibration variable that will be experimentally tweaked until it fits the robot the best.
         adjustment = (angles.firstAngle - angle) * calibration;                                     //This defines the adjustment as the difference between the desired angle and the current angle and multiplies that by the calibration.
         return adjustment;                                                                          //This return statement means that the method "AdjustOrientation(angle)" will return the required amount of adjustment to be added to the wheels.
     }
