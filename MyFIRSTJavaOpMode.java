@@ -170,7 +170,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
             oppreborn.midDrive.setPower(0);
 
             while (opModeIsActive() &&
-                    (oppreborn.leftDrive.isBusy() && oppreborn.rightDrive.isBusy())){
+                    (oppreborn.leftDrive.isBusy() || oppreborn.rightDrive.isBusy())){
 
                 double adjustment = Math.abs(AdjustOrientation(angle));                                       //This calls upon the AdjustOrientation() function defined below.
                 if (angles.firstAngle > angle) {                                                    //This checks to see if the current angle is greater than the desired angle in turns of euclidean angles if this is true, then the speed of the left wheel will increase causing the robot to speed up by the increment of adjustment
@@ -225,7 +225,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
             oppreborn.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             oppreborn.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES);
-            if ( angles.firstAngle >= dsrangle-1 && angles.firstAngle <= dsrangle+1 ) {
+            if ( !(angles.firstAngle >= dsrangle-1 && angles.firstAngle <= dsrangle+1 )) {
                 if (angles.firstAngle > dsrangle) {                                                          //This checks to see if the current angle is greater than the desired angle, "dsrangle", and if so, it will tell the robot that it needs to Rotate until the angles are equal
                     while (angles.firstAngle > dsrangle && opModeIsActive()) {                                                   //This stops when the current angle equals the desired angle or if the current time exceeds the 30 seconds that the match is allowed to take.
                         oppreborn.leftDrive.setPower(TURN_SPEED);                                       //This rotation results in the rover turning in a clockwise fashion which in euclidean angles means that it's rotation is approaching -180 degrees.
@@ -272,7 +272,7 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
 
 
     /**
-     * private synchronized double[] RoverFromHit(){
+     * private double[] RoverFromHit(){
      * while (opModeIsActive() && duration<timeoutmilli){
      * "get current acceleration";
      * "get expected acceleration"//you could create getter and setter threads that always keep track of
